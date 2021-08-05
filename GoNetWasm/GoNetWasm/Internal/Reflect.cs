@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using GoNetWasm.Data;
 using GoNetWasm.Runtime;
 
 namespace GoNetWasm.Internal
@@ -55,6 +56,45 @@ namespace GoNetWasm.Internal
             }
 
             return (Func<object, object[], object>) Func;
+        }
+
+        public static object Apply(object obj, object instance, object[] args)
+        {
+            if (obj is Func<object, object[], object> func)
+            {
+                var result = func(instance, args);
+                return result;
+            }
+            throw new NotImplementedException(nameof(Apply));
+        }
+
+        public static object Construct(object obj, object[] args)
+        {
+            if (obj is Func<object> of)
+            {
+                var res = of();
+                if (res is ICollection<byte> byteArray)
+                {
+                    for (var i = 0; i < (double) args[0]; i++)
+                        byteArray.Add(0);
+                    return res;
+                }
+                throw new NotImplementedException(res + " ?");
+            }
+            throw new NotImplementedException(nameof(Construct));
+        }
+
+        public static void Set(object obj, object name, object rawValue)
+        {
+            if (name is string myName)
+            {
+                var type = obj.GetType();
+                var prop = FindProperty(type, myName);
+                var value = rawValue.IsUndefinedOrNull() ? null : rawValue;
+                prop.SetValue(obj, value);
+                return;
+            }
+            throw new NotImplementedException(nameof(Set));
         }
 
         private static FieldInfo FindField(Type type, string name)
