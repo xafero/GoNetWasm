@@ -4,13 +4,13 @@ using System.Text;
 
 namespace GoNetWasm.Data
 {
-    public class JsUint8Array : List<byte>
+    internal class JsUint8Array : List<byte>
     {
-        public JsUint8Array()
+        internal JsUint8Array()
         {
         }
 
-        public JsUint8Array(Span<byte> span) : base(span.ToArray())
+        internal JsUint8Array(Span<byte> span) : base(span.ToArray())
         {
         }
 

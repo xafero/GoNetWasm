@@ -2,12 +2,12 @@ using System;
 
 namespace GoNetWasm
 {
-    public class Error : Exception
+    internal class Error : Exception
     {
-        public Error(string text) : base(text)
+        internal Error(string text) : base(text)
         {
         }
 
-        public string Code { get; set; }
+        internal string Code { get; set; }
     }
 }

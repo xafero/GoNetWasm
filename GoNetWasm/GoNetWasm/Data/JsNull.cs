@@ -6,6 +6,6 @@ namespace GoNetWasm.Data
         {
         }
 
-        public static readonly JsNull S = new JsNull();
+        internal static readonly JsNull S = new JsNull();
     }
 }
