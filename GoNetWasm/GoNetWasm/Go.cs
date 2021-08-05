@@ -28,7 +28,7 @@ namespace GoNetWasm
         private IStore _store;
         private Instance _instance;
 
-        private EventData PendingEvent { get; set; }
+        public EventData PendingEvent { get; set; }
         private bool? Exited { get; set; }
 
         public Go()
@@ -177,7 +177,6 @@ namespace GoNetWasm
                 var args = LoadSliceOfValues(sp + 16);
                 var result = Reflect.Construct(v, args);
                 sp = GetSp() >> 0;
-                Console.WriteLine($" valueNew: {v} | {string.Join(", ", args)} | {result} | {sp}");
                 StoreValue(sp + 40, result);
                 Mem.WriteByte(_store, sp + 48, 1);
             }
