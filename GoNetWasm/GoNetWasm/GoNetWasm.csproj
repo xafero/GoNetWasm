@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+
+    <Authors>xafero</Authors>
+    <Owners>xafero</Owners>
   </PropertyGroup>
 
   <ItemGroup>

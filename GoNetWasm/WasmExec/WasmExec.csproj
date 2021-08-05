@@ -3,6 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+
+    <Authors>xafero</Authors>
+    <Owners>xafero</Owners>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GoNetWasm\GoNetWasm.csproj" />
+  </ItemGroup>
 
 </Project>
