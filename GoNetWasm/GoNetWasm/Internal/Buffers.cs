@@ -6,7 +6,7 @@ namespace GoNetWasm.Internal
 {
     internal static class Buffers
     {
-        public static void Refill<T>(this IDictionary<int, T> values, IEnumerable<T> rawObjects)
+        internal static void Refill<T>(this IDictionary<int, T> values, IEnumerable<T> rawObjects)
         {
             var objects = rawObjects.ToArray();
             values.Clear();
@@ -14,14 +14,14 @@ namespace GoNetWasm.Internal
                 values[i] = objects[i];
         }
 
-        public static void Refill<T>(this IDictionary<T, int> values, IEnumerable<(T, int)> objects)
+        internal static void Refill<T>(this IDictionary<T, int> values, IEnumerable<(T, int)> objects)
         {
             values.Clear();
             foreach (var entry in objects)
                 values[entry.Item1] = entry.Item2;
         }
 
-        public static void Refill(this Span<byte> dest, ICollection<byte> source)
+        internal static void Refill(this Span<byte> dest, ICollection<byte> source)
         {
             using var bytes = source.GetEnumerator();
             for (var i = 0; i < source.Count; i++)
@@ -31,7 +31,7 @@ namespace GoNetWasm.Internal
             }
         }
 
-        public static void Refill(this ICollection<byte> dest, Span<byte> source)
+        internal static void Refill(this ICollection<byte> dest, Span<byte> source)
         {
             dest.Clear();
             foreach (var t in source)

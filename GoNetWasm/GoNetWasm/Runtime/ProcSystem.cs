@@ -5,7 +5,7 @@ namespace GoNetWasm.Runtime
 {
     internal class ProcSystem
     {
-        public static long GetNanoTime()
+        internal static long GetNanoTime()
         {
             var nano = 10000L * Stopwatch.GetTimestamp();
             nano /= TimeSpan.TicksPerMillisecond;

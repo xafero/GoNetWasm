@@ -9,12 +9,12 @@ namespace GoNetWasm.Internal
 {
     internal static class Reflect
     {
-        public static void DeleteProperty(object obj, string name)
+        internal static void DeleteProperty(object obj, string name)
         {
             throw new NotImplementedException(nameof(DeleteProperty));
         }
 
-        public static object Get(object obj, object value)
+        internal static object Get(object obj, object value)
         {
             if (obj is Globals g && value is string key)
                 return g[key];
@@ -58,7 +58,7 @@ namespace GoNetWasm.Internal
             return (Func<object, object[], object>) Func;
         }
 
-        public static object Apply(object obj, object instance, object[] args)
+        internal static object Apply(object obj, object instance, object[] args)
         {
             if (obj is Func<object, object[], object> func)
             {
@@ -68,7 +68,7 @@ namespace GoNetWasm.Internal
             throw new NotImplementedException(nameof(Apply));
         }
 
-        public static object Construct(object obj, object[] args)
+        internal static object Construct(object obj, object[] args)
         {
             if (obj is Func<object> of)
             {
@@ -84,7 +84,7 @@ namespace GoNetWasm.Internal
             throw new NotImplementedException(nameof(Construct));
         }
 
-        public static void Set(object obj, object name, object rawValue)
+        internal static void Set(object obj, object name, object rawValue)
         {
             if (name is string myName)
             {

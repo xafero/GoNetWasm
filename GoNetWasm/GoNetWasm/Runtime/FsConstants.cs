@@ -1,6 +1,6 @@
 namespace GoNetWasm.Runtime
 {
-    public class FsConstants
+    internal class FsConstants
     {
         public readonly int O_WRONLY = 1;
         

@@ -10,7 +10,7 @@ namespace GoNetWasm.Runtime
         private readonly ProcSystem _proc = new ProcSystem();
         private readonly FileSystem _fs = new FileSystem();
 
-        public Globals()
+        internal Globals()
         {
             _values = new Dictionary<string, object>
             {
@@ -22,7 +22,7 @@ namespace GoNetWasm.Runtime
             };
         }
 
-        public object this[string key]
+        internal object this[string key]
         {
             get
             {
