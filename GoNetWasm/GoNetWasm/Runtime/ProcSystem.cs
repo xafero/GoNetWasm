@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace GoNetWasm.Runtime
 {
@@ -11,6 +12,12 @@ namespace GoNetWasm.Runtime
             nano /= TimeSpan.TicksPerMillisecond;
             nano *= 100L;
             return nano;
+        }
+
+        public static string Cwd()
+        {
+            var dir = Directory.GetCurrentDirectory();
+            return dir;
         }
     }
 }

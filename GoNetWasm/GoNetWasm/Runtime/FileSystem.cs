@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using GoNetWasm.Data;
@@ -14,6 +15,13 @@ namespace GoNetWasm.Runtime
         private static readonly UTF8Encoding Encoding = new UTF8Encoding();
 
         private string _outputBuf = "";
+
+        public void Stat(string path, Func<object[], object> call)
+        {
+            var fullPath = Path.GetFullPath(path);
+            var fsInfo = new FileInfo(fullPath);
+            call(new object[] {JsNull.S, new FsStats(fsInfo)});
+        }
 
         /// <summary>
         /// writeSync(fd, buf)
