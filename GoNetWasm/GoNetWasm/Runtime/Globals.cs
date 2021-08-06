@@ -16,11 +16,16 @@ namespace GoNetWasm.Runtime
         {
             _values = new Dictionary<string, object>
             {
-                {"Object", new Func<object>(() => (object) new JsObject())},
-                {"Array", new Func<object>(() => (object) new JsArray())},
-                {"Uint8Array", new Func<object>(() => (object) new JsUint8Array())},
+                {"Object", new Func<object>(CreateObject)},
+                {"Array", new Func<object>(CreateArray)},
+                {"Uint8Array", new Func<object>(CreateByteArray)},
+                {"Date", new Func<object>(CreateDate)},
+                {"AbortController", new Func<object>(CreateAbortController)},
+                {"Headers", new Func<object>(CreateHeaders)},
                 {"process", _proc},
-                {"fs", _fs}
+                {"fs", _fs},
+                {"crypto", _crypto},
+                {"fetch", new Func<object[], object>(Network.Fetch)}
             };
         }
 
