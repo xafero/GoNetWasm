@@ -52,6 +52,7 @@ namespace GoNetWasm.Internal
                 var item = index == 0 ? pair.Key : pair.Value;
                 return item;
             }
+
             throw new NotImplementedException(nameof(Get));
         }
 
@@ -70,6 +71,11 @@ namespace GoNetWasm.Internal
             if (obj is Func<object, object[], object> func)
             {
                 var result = func(instance, args);
+                return result;
+            }
+            if (obj is Func<object[], object> staticFunc)
+            {
+                var result = staticFunc(args);
                 return result;
             }
             throw new NotImplementedException(nameof(Apply));
