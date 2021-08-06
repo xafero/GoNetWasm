@@ -24,5 +24,7 @@ namespace GoNetWasm.Runtime
         {
             _info = info;
         }
+
+        public bool IsDirectory() => Directory.Exists(_info.FullName);
     }
 }

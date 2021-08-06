@@ -20,6 +20,8 @@ namespace GoNetWasm.Runtime
             return dir;
         }
 
+        public int Pid => Process.GetCurrentProcess().Id;
+
         public override string ToString() => nameof(ProcSystem);
     }
 }
