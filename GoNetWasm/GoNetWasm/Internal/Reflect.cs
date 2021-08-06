@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -45,6 +46,12 @@ namespace GoNetWasm.Internal
                 return item;
             }
 
+            if (obj is KeyValuePair<string, string> pair)
+            {
+                var index = (long) value;
+                var item = index == 0 ? pair.Key : pair.Value;
+                return item;
+            }
             throw new NotImplementedException(nameof(Get));
         }
 
