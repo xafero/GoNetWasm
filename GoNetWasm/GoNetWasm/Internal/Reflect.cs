@@ -101,6 +101,13 @@ namespace GoNetWasm.Internal
         {
             if (name is string myName)
             {
+                if (obj is IDictionary dict)
+                {
+                    var key = myName;
+                    var val = rawValue;
+                    dict[key] = val;
+                    return;
+                }
                 var type = obj.GetType();
                 var prop = FindProperty(type, myName);
                 var value = rawValue.IsUndefinedOrNull() ? null : rawValue;
