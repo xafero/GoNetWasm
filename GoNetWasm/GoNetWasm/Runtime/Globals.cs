@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GoNetWasm.Data;
+using GoNetWasm.Internal;
 
 namespace GoNetWasm.Runtime
 {
@@ -9,6 +10,7 @@ namespace GoNetWasm.Runtime
         private readonly Dictionary<string, object> _values;
         private readonly ProcSystem _proc = new ProcSystem();
         private readonly FileSystem _fs = new FileSystem();
+        private readonly Crypto _crypto = new Crypto();
 
         internal Globals()
         {
@@ -21,6 +23,13 @@ namespace GoNetWasm.Runtime
                 {"fs", _fs}
             };
         }
+
+        private static object CreateObject() => new JsObject();
+        private static object CreateArray() => new JsArray();
+        private static object CreateByteArray() => new JsUint8Array();
+        private static object CreateDate() => new JsDate();
+        private static object CreateAbortController() => new AbortController();
+        private static object CreateHeaders() => new Headers();
 
         internal object this[string key]
         {
