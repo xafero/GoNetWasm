@@ -92,6 +92,11 @@ namespace GoNetWasm.Internal
                         byteArray.Add(0);
                     return res;
                 }
+                if (args == null || args.Length < 1)
+                {
+                    var instance = of();
+                    return instance;
+                }
                 throw new NotImplementedException(res + " ?");
             }
             throw new NotImplementedException(nameof(Construct));
