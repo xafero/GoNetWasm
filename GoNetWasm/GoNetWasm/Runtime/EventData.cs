@@ -9,5 +9,7 @@ namespace GoNetWasm.Runtime
         public object Args { get; set; }
 
         public object Result { get; set; }
+
+        public override string ToString() => nameof(EventData);
     }
 }

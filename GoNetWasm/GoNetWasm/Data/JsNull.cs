@@ -7,5 +7,7 @@ namespace GoNetWasm.Data
         }
 
         internal static readonly JsNull S = new JsNull();
+
+        public override string ToString() => nameof(JsNull);
     }
 }

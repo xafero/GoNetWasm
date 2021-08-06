@@ -19,5 +19,7 @@ namespace GoNetWasm.Runtime
             var dir = Directory.GetCurrentDirectory();
             return dir;
         }
+
+        public override string ToString() => nameof(ProcSystem);
     }
 }

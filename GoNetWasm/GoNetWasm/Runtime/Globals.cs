@@ -32,5 +32,7 @@ namespace GoNetWasm.Runtime
                 throw new NotImplementedException(nameof(Globals) + ": " + key);
             }
         }
+
+        public override string ToString() => nameof(Globals);
     }
 }

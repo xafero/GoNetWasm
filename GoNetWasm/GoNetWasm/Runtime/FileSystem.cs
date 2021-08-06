@@ -54,5 +54,7 @@ namespace GoNetWasm.Runtime
             var n = WriteSync(fd, buf);
             call(new object[] {JsNull.S, n, buf});
         }
+
+        public override string ToString() => nameof(FileSystem);
     }
 }

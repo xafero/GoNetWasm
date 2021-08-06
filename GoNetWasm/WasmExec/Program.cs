@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using GoNetWasm;
+using NLog;
 using Wasmtime;
 
 namespace WasmExec
@@ -15,7 +16,8 @@ namespace WasmExec
                 return;
             }
             var wasmFile = Path.GetFullPath(args[0]);
-            using var go = new Go();
+            var logger = LogManager.GetCurrentClassLogger();
+            using var go = new Go(logger);
             go.Create(new Engine(), e => Module.FromFile(e, wasmFile));
             go.ImportObject();
             go.Instantiate();

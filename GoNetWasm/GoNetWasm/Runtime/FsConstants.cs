@@ -13,5 +13,7 @@ namespace GoNetWasm.Runtime
         public readonly int O_APPEND = 5;
         
         public readonly int O_EXCL = 6;
+
+        public override string ToString() => nameof(FsConstants);
     }
 }

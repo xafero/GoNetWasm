@@ -2,7 +2,7 @@ using System;
 
 namespace GoNetWasm.Internal
 {
-    internal static class Crypto
+    internal class Crypto
     {
         private static readonly Random Random = new Random();
 
@@ -11,5 +11,7 @@ namespace GoNetWasm.Internal
             Random.NextBytes(buffer);
             return buffer;
         }
+
+        public override string ToString() => nameof(Crypto);
     }
 }

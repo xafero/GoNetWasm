@@ -14,6 +14,8 @@ namespace GoNetWasm.Data
         {
         }
 
+        public int ByteLength => Count;
+
         public override string ToString()
         {
             var bld = new StringBuilder();

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NLog" Version="4.7.10" />
     <PackageReference Include="wasmtime" Version="0.28.0-preview1" />
   </ItemGroup>
 

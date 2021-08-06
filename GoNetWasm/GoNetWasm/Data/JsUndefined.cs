@@ -7,5 +7,7 @@ namespace GoNetWasm.Data
         }
 
         internal static readonly JsUndefined S = new JsUndefined();
+        
+        public override string ToString() => nameof(JsUndefined);
     }
 }

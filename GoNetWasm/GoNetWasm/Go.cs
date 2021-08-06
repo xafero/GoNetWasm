@@ -6,6 +6,7 @@ using System.Text;
 using GoNetWasm.Data;
 using GoNetWasm.Internal;
 using GoNetWasm.Runtime;
+using NLog;
 using Wasmtime;
 
 namespace GoNetWasm
@@ -14,6 +15,7 @@ namespace GoNetWasm
     {
         private readonly FileSystem _fs = new FileSystem();
 
+        private readonly ILogger _log;
         private readonly UTF8Encoding _encoding;
         private readonly Dictionary<int, object> _scheduledTimeouts;
         private readonly Dictionary<int, double> _goRefCounts;
@@ -31,8 +33,9 @@ namespace GoNetWasm
         public EventData PendingEvent { get; set; }
         private bool? Exited { get; set; }
 
-        public Go()
+        public Go(ILogger log)
         {
+            _log = log;
             _encoding = new UTF8Encoding();
             _scheduledTimeouts = new Dictionary<int, object>();
             _goRefCounts = new Dictionary<int, double>();
@@ -83,6 +86,7 @@ namespace GoNetWasm
             var id = Mem.ReadInt32(_store, sp + 8);
             ClearTimeout(_scheduledTimeouts[id]);
             _scheduledTimeouts.Remove(id);
+            _log.Trace("clearTimeoutEvent {id}", id);
         }
 
         /// <summary>
@@ -93,6 +97,7 @@ namespace GoNetWasm
             sp >>= 0;
             var buf = LoadSlice(sp + 8);
             Crypto.GetRandomValues(buf);
+            _log.Trace("getRandomData {buf}", buf.Length);
         }
 
         /// <summary>
@@ -110,6 +115,7 @@ namespace GoNetWasm
                 _ids.Remove(v);
                 _idPool.Push(id);
             }
+            _log.Trace("finalizeRef {id}", id);
         }
 
         /// <summary>
@@ -120,6 +126,7 @@ namespace GoNetWasm
             sp >>= 0;
             var longVal = ProcSystem.GetNanoTime() * 1000;
             SetInt64(sp + 8, longVal);
+            _log.Trace("nanoTime {val}", longVal);
         }
 
         /// <summary>
@@ -129,9 +136,11 @@ namespace GoNetWasm
         {
             sp >>= 0;
             var msec = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            SetInt64(sp + 8, msec / 1000);
+            var mVal = msec / 1000;
+            SetInt64(sp + 8, mVal);
             var val = (msec % 1000) * 1000000;
             Mem.WriteInt32(_store, sp + 16, (int) val);
+            _log.Trace("walltime {mVal} {val}", mVal, val);
         }
 
         /// <summary>
@@ -140,7 +149,9 @@ namespace GoNetWasm
         private void StringVal(int sp)
         {
             sp >>= 0;
-            StoreValue(sp + 24, LoadString(sp + 8));
+            var txt = LoadString(sp + 8);
+            StoreValue(sp + 24, txt);
+            _log.Trace("stringVal '{val}'", txt);
         }
 
         /// <summary>
@@ -157,6 +168,7 @@ namespace GoNetWasm
                 sp = GetSp() >> 0;
                 StoreValue(sp + 40, result);
                 Mem.WriteByte(_store, sp + 48, 1);
+                _log.Trace("valueInvoke {v} {args} {result}", v, args, result);
             }
             catch (Exception err)
             {
@@ -179,6 +191,7 @@ namespace GoNetWasm
                 sp = GetSp() >> 0;
                 StoreValue(sp + 40, result);
                 Mem.WriteByte(_store, sp + 48, 1);
+                _log.Trace("valueNew {v} {args} {result}", v, args, result);
             }
             catch (Exception err)
             {
@@ -196,6 +209,7 @@ namespace GoNetWasm
             var val = LoadValue(sp + 8);
             var num = ((ICollection) val).Count;
             SetInt64(sp + 16, num);
+            _log.Trace("valueLength {val} {num}", val, num);
         }
 
         /// <summary>
@@ -289,6 +303,7 @@ namespace GoNetWasm
             dst.Refill(toCopy);
             SetInt64(sp + 40, toCopy.Length);
             Mem.WriteByte(_store, sp + 48, 1);
+            _log.Trace("copyBytesToGo {src} {dst} {toCopy}", srcArray.Count, dst.Length, toCopy.Length);
         }
 
         /// <summary>
@@ -309,6 +324,7 @@ namespace GoNetWasm
             dstArray.Refill(toCopy);
             SetInt64(sp + 40, toCopy.Length);
             Mem.WriteByte(_store, sp + 48, 1);
+            _log.Trace("copyBytesToJS {src} {dst} {toCopy}", src.Length, dstArray.Count, toCopy.Length);
         }
 
         private string LoadString(int addr)
@@ -345,6 +361,7 @@ namespace GoNetWasm
             var result = Reflect.Get(@ref, str);
             sp = GetSp() >> 0;
             StoreValue(sp + 32, result);
+            _log.Trace("valueGet {ref} {str} {result}", @ref, str, result);
         }
 
         /// <summary>
@@ -353,7 +370,11 @@ namespace GoNetWasm
         private void ValueSet(int sp)
         {
             sp >>= 0;
-            Reflect.Set(LoadValue(sp + 8), LoadString(sp + 16), LoadValue(sp + 32));
+            var obj = LoadValue(sp + 8);
+            var name = LoadString(sp + 16);
+            var val = LoadValue(sp + 32);
+            Reflect.Set(obj, name, val);
+            _log.Trace("valueSet {obj} {name} {val}", obj, name, val);
         }
 
         /// <summary>
@@ -362,7 +383,10 @@ namespace GoNetWasm
         private void ValueDelete(int sp)
         {
             sp >>= 0;
-            Reflect.DeleteProperty(LoadValue(sp + 8), LoadString(sp + 16));
+            var obj = LoadValue(sp + 8);
+            var name = LoadString(sp + 16);
+            Reflect.DeleteProperty(obj, name);
+            _log.Trace("valueDelete {obj} {name}", obj, name);
         }
 
         /// <summary>
@@ -375,6 +399,7 @@ namespace GoNetWasm
             var index = GetInt64(sp + 16);
             var item = Reflect.Get(obj, index);
             StoreValue(sp + 24, item);
+            _log.Trace("valueIndex {obj} {index} {item}", obj, index, item);
         }
 
         private void StoreValue(int addr, object v)
@@ -425,6 +450,9 @@ namespace GoNetWasm
                 case JsNull _:
                     typeFlag = 0;
                     break;
+                case bool _:
+                    typeFlag = 0;
+                    break;
                 case { }:
                     typeFlag = 1;
                     break;
@@ -432,6 +460,7 @@ namespace GoNetWasm
 
             Mem.WriteInt32(_store, addr + 4, nanHead | typeFlag);
             Mem.WriteInt32(_store, addr, id);
+            _log.Trace("storeValue {typeFlag} {id} {addr}", typeFlag, id, addr);
         }
 
         /// <summary>
@@ -440,7 +469,10 @@ namespace GoNetWasm
         private void ValueSetIndex(int sp)
         {
             sp >>= 0;
-            Reflect.Set(LoadValue(sp + 8), GetInt64(sp + 16), LoadValue(sp + 24));
+            var obj = LoadValue(sp + 8);
+            var index = GetInt64(sp + 16);
+            var val = LoadValue(sp + 24);
+            Reflect.Set(obj, index, val);
         }
 
         /// <summary>
@@ -452,12 +484,14 @@ namespace GoNetWasm
             try
             {
                 var v = LoadValue(sp + 8);
-                var m = Reflect.Get(v, LoadString(sp + 16));
+                var name = LoadString(sp + 16);
+                var m = Reflect.Get(v, name);
                 var args = LoadSliceOfValues(sp + 32);
                 var result = Reflect.Apply(m, v, args);
                 sp = GetSp() >> 0;
                 StoreValue(sp + 56, result);
                 Mem.WriteByte(_store, sp + 64, 1);
+                _log.Trace("valueCall {v} {name} {m} {args} {result}", v, name, m, args, result);
             }
             catch (Exception err)
             {
@@ -488,6 +522,7 @@ namespace GoNetWasm
             _ids.Clear();
             _idPool.Clear();
             Exit(code);
+            _log.Trace("wasmExit {code}", code);
         }
 
         /// <summary>
@@ -501,6 +536,7 @@ namespace GoNetWasm
             var n = Mem.ReadInt32(_store, sp + 24);
             var slice = MemBuffer().Slice((int) p, n);
             _fs.WriteSync(fd, slice.ToArray());
+            _log.Trace("wasmWrite {fd} {p} {n} {slice}", fd, p, n, slice.Length);
         }
 
         private void Debug(int value)
@@ -519,6 +555,7 @@ namespace GoNetWasm
         private void ResetMemoryDataView(int sp)
         {
             sp >>= 0;
+            _log.Trace("resetMemoryDataView");
         }
 
         /// <summary>
@@ -529,6 +566,7 @@ namespace GoNetWasm
             sp >>= 0;
             var @ref = LoadValue(sp + 8);
             var tr = LoadValue(sp + 16);
+            _log.Trace("valueInstanceOf {ref} {tr}", @ref, tr);
         }
 
         /// <summary>
@@ -554,6 +592,7 @@ namespace GoNetWasm
                 GetInt64(sp + 8) + 1
             );
             Mem.WriteInt32(_store, sp + 16, id);
+            _log.Trace("scheduleTimeoutEvent {id}", id);
         }
 
         private void Resume()
@@ -690,5 +729,7 @@ namespace GoNetWasm
             _linker.Define(module, name, func);
         }
         #endregion
+
+        public override string ToString() => nameof(Go);
     }
 }
