@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GoNetWasm.Data;
+using GoNetWasm.Http;
 using GoNetWasm.Internal;
 
 namespace GoNetWasm.Runtime
