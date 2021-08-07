@@ -450,6 +450,9 @@ namespace GoNetWasm
                 case JsNull _:
                     typeFlag = 0;
                     break;
+                case int _:
+                    typeFlag = 0;
+                    break;
                 case bool _:
                     typeFlag = 0;
                     break;

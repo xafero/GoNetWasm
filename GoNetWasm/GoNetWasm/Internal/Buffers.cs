@@ -37,5 +37,11 @@ namespace GoNetWasm.Internal
             foreach (var t in source)
                 dest.Add(t);
         }
+
+        internal static void Overwrite(this IList<byte> dest, byte[] source)
+        {
+            for (var i = 0; i < source.Length; i++)
+                dest[i] = source[i];
+        }
     }
 }

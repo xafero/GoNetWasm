@@ -80,6 +80,16 @@ namespace GoNetWasm.Runtime
             call(new object[] {JsNull.S, n, buf});
         }
 
+        public void Read(double fd, IList<byte> buf, int offset, double length, object position,
+            Func<object[], object> call)
+        {
+            var fileDesc = _fileDesc[(int) fd];
+            var buff = buf.ToArray();
+            var n = fileDesc.Stream.Read(buff, offset, (int) length);
+            buf.Overwrite(buff);
+            call(new object[] {JsNull.S, n, buf});
+        }
+
         public void Open(string path, double flags, double mode, Func<object[], object> call)
         {
             var foundFlags = FsConstants.FindFlags((int) flags);
@@ -90,6 +100,15 @@ namespace GoNetWasm.Runtime
                 var createHandle = new FileDescriptor(foundFlags, created, path);
                 _fileDesc[createHandle.Id] = createHandle;
                 call(new object[] {JsNull.S, createHandle.Id});
+                return;
+            }
+
+            if ((int) flags == Constants.O_RDONLY)
+            {
+                var read = File.OpenRead(path);
+                var readHandle = new FileDescriptor(foundFlags, read, path);
+                _fileDesc[readHandle.Id] = readHandle;
+                call(new object[] {JsNull.S, readHandle.Id});
                 return;
             }
 

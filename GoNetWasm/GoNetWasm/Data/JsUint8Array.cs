@@ -16,11 +16,14 @@ namespace GoNetWasm.Data
 
         public int ByteLength => Count;
 
-        public override string ToString()
+        public override string ToString() => ToString(false);
+
+        private string ToString(bool showContent)
         {
             var bld = new StringBuilder();
             bld.Append("Uint8Array" + "(" + Count + ") [");
-            bld.Append(string.Join(", ", this));
+            if (showContent)
+                bld.Append(string.Join(", ", this));
             bld.Append("]");
             return bld.ToString();
         }
