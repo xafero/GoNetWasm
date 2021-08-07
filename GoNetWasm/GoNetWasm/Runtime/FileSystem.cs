@@ -85,6 +85,8 @@ namespace GoNetWasm.Runtime
         {
             var fileDesc = _fileDesc[(int) fd];
             var buff = buf.ToArray();
+            if (position is double posD)
+                fileDesc.Stream.Seek((long) posD, SeekOrigin.Begin);
             var n = fileDesc.Stream.Read(buff, offset, (int) length);
             buf.Overwrite(buff);
             call(new object[] {JsNull.S, n, buf});
