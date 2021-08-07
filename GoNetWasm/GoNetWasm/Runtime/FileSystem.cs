@@ -124,6 +124,13 @@ namespace GoNetWasm.Runtime
             call(new object[] {JsNull.S});
         }
 
+        public void Fsync(double fileId, Func<object[], object> call)
+        {
+            var fileDesc = _fileDesc[(int) fileId];
+            fileDesc.Stream.Flush();
+            call(new object[] {JsNull.S});
+        }
+
         public void Unlink(string path, Func<object[], object> call)
         {
             if (!File.Exists(path))
